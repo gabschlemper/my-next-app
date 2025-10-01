@@ -1,15 +1,19 @@
 @import "tailwindcss";
 
+/**
+ * Global Styles for GitHub Portfolio Demo
+ * 
+ * ACCESSIBILITY FEATURES:
+ * - High contrast mode support
+ * - Proper focus management
+ * - Screen reader friendly styles
+ * - Reduced motion support
+ * - Color scheme preferences
+ */
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +23,80 @@
   }
 }
 
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+    --border: #000000;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #000000;
+      --foreground: #ffffff;
+      --border: #ffffff;
+    }
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+}
+
+/* Focus styles for better accessibility */
+*:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus-visible version of sr-only */
+.sr-only:focus-visible,
+.focus\:not-sr-only:focus-visible {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
 }
