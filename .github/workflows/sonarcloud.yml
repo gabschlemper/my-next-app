@@ -1,22 +1,10 @@
 name: SonarCloud Analysis
 
 on:
-  # Trigger analysis on push to main branch
   push:
-    branches:
-      - main
-  # Trigger analysis on pull requests to main
+    branches: [main]
   pull_request:
-    branches:
-      - main
-    types: [opened, synchronize, reopened]
-
-# Definir permissões necessárias
-permissions:
-  contents: read
-  pull-requests: read
-  checks: write
-  statuses: write
+    branches: [main]
 
 jobs:
   sonarcloud:
@@ -27,7 +15,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Disable shallow clones for better relevancy of analysis
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -41,19 +28,9 @@ jobs:
 
       - name: Run tests with coverage
         run: npm run test:coverage
-        env:
-          CI: true
-
-      - name: Run ESLint
-        run: npm run lint -- --format json --output-file eslint-report.json
-        continue-on-error: true
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          # Additional arguments for SonarCloud scanner
-          args: >
-            -Dsonar.verbose=true
