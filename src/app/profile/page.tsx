@@ -5,23 +5,23 @@ import { ErrorMessage } from '@/components/ui/Status';
 
 /**
  * Profile Page - Server-Side Rendering (SSR) Example
- * 
+ *
  * DATA FETCHING STRATEGY: Server-Side Rendering
- * 
+ *
  * TRADE-OFFS:
- * - Pros: 
+ * - Pros:
  *   * SEO-friendly (content rendered on server)
  *   * Fast initial page load (no loading states)
  *   * Works without JavaScript
  *   * Fresh data on every request
- * 
+ *
  * - Cons:
  *   * Slower navigation (full server round-trip)
  *   * Higher server load
  *   * No caching between requests
  *   * Blocking rendering on data fetch
- * 
- * BEST FOR: 
+ *
+ * BEST FOR:
  * - SEO-critical pages
  * - Content that changes frequently
  * - When you need guaranteed fresh data
@@ -35,21 +35,26 @@ export async function generateMetadata(): Promise<Metadata> {
     const user = await fetchUserServer(USERNAME);
     return {
       title: `${user.name || user.login} - GitHub Profile`,
-      description: user.bio || `View ${user.name || user.login}'s GitHub profile, repositories, and contributions.`,
+      description:
+        user.bio ||
+        `View ${user.name || user.login}'s GitHub profile, repositories, and contributions.`,
       openGraph: {
         title: `${user.name || user.login} - GitHub Profile`,
-        description: user.bio || `View ${user.name || user.login}'s GitHub profile, repositories, and contributions.`,
+        description:
+          user.bio ||
+          `View ${user.name || user.login}'s GitHub profile, repositories, and contributions.`,
         images: [user.avatar_url],
         type: 'profile',
       },
       twitter: {
         card: 'summary_large_image',
         title: `${user.name || user.login} - GitHub Profile`,
-        description: user.bio || `View ${user.name || user.login}'s GitHub profile.`,
+        description:
+          user.bio || `View ${user.name || user.login}'s GitHub profile.`,
         images: [user.avatar_url],
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: 'GitHub Profile - Not Found',
       description: 'The requested GitHub profile could not be found.',
@@ -80,9 +85,11 @@ export default async function ProfilePage() {
                 💡 Technical Implementation Note
               </h2>
               <p className="text-sm text-blue-800 dark:text-blue-200">
-                This page uses <strong>Server-Side Rendering (SSR)</strong>. The data is fetched on the server 
-                before the page is sent to your browser, ensuring SEO-friendly content and fast initial rendering. 
-                However, navigation to this page may be slower as it requires a full server round-trip.
+                This page uses <strong>Server-Side Rendering (SSR)</strong>. The
+                data is fetched on the server before the page is sent to your
+                browser, ensuring SEO-friendly content and fast initial
+                rendering. However, navigation to this page may be slower as it
+                requires a full server round-trip.
               </p>
             </div>
           </div>
@@ -97,22 +104,30 @@ export default async function ProfilePage() {
             </h2>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="prose dark:prose-invert max-w-none">
-                <h3 className="text-lg font-semibold mb-4">How this page works:</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                  How this page works:
+                </h3>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                   <li>
-                    <strong>Server-side data fetching:</strong> User data is fetched on the server using the GitHub API before the HTML is generated
+                    <strong>Server-side data fetching:</strong> User data is
+                    fetched on the server using the GitHub API before the HTML
+                    is generated
                   </li>
                   <li>
-                    <strong>SEO optimization:</strong> Search engines can crawl the fully rendered content, improving discoverability
+                    <strong>SEO optimization:</strong> Search engines can crawl
+                    the fully rendered content, improving discoverability
                   </li>
                   <li>
-                    <strong>Fresh data guarantee:</strong> Every page load fetches the latest data directly from GitHub
+                    <strong>Fresh data guarantee:</strong> Every page load
+                    fetches the latest data directly from GitHub
                   </li>
                   <li>
-                    <strong>No loading states:</strong> Users see the complete page immediately without spinners or skeleton screens
+                    <strong>No loading states:</strong> Users see the complete
+                    page immediately without spinners or skeleton screens
                   </li>
                   <li>
-                    <strong>Error handling:</strong> Server-side errors are handled gracefully with proper error pages
+                    <strong>Error handling:</strong> Server-side errors are
+                    handled gracefully with proper error pages
                   </li>
                 </ul>
               </div>
@@ -121,10 +136,10 @@ export default async function ProfilePage() {
         </div>
       </div>
     );
-  } catch (error) {
+  } catch (fetchError) {
     // Server-side error handling
-    console.error('Error fetching user data:', error);
-    
+    console.error('Error fetching user data:', fetchError);
+
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -136,27 +151,29 @@ export default async function ProfilePage() {
               Server-Side Rendered (SSR)
             </p>
           </div>
-          
+
           <div className="max-w-2xl mx-auto">
-            <ErrorMessage 
+            <ErrorMessage
               message={
-                error instanceof Error 
-                  ? `Failed to load profile: ${error.message}` 
+                fetchError instanceof Error
+                  ? `Failed to load profile: ${fetchError.message}`
                   : 'Failed to load GitHub profile. Please try again later.'
               }
             />
-            
+
             <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
                 What happened?
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                This page uses server-side rendering (SSR), which means the GitHub API is called on the server 
-                before the page is sent to your browser. The error occurred during this server-side data fetching process.
+                This page uses server-side rendering (SSR), which means the
+                GitHub API is called on the server before the page is sent to
+                your browser. The error occurred during this server-side data
+                fetching process.
               </p>
               <p className="text-gray-600 dark:text-gray-400">
-                Common causes include API rate limiting, network issues, or the user not existing. 
-                Try refreshing the page or check back later.
+                Common causes include API rate limiting, network issues, or the
+                user not existing. Try refreshing the page or check back later.
               </p>
             </div>
           </div>

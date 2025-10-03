@@ -1,20 +1,19 @@
 import useSWR from 'swr';
-import { GitHubUser, GitHubRepository } from '@/types/github';
 import { fetchUser, fetchRepositories, swrKeys } from '@/lib/github-api';
 
 /**
  * SWR Hooks for GitHub API
- * 
+ *
  * CLIENT-SIDE CACHING STRATEGY:
  * - Uses SWR for automatic caching, revalidation, and error handling
  * - Optimistic updates and background refreshing
  * - Automatic retry on failure
  * - Deduplication of requests
- * 
+ *
  * TRADE-OFFS:
  * - Pros: Real-time data, optimistic UI, automatic caching, great UX
  * - Cons: No SEO, loading states, requires JavaScript, network dependent
- * 
+ *
  * Best for: Interactive features, user dashboards, real-time updates
  */
 
@@ -23,7 +22,10 @@ interface UseGitHubUserOptions {
   refreshInterval?: number;
 }
 
-export function useGitHubUser(username: string, options: UseGitHubUserOptions = {}) {
+export function useGitHubUser(
+  username: string,
+  options: UseGitHubUserOptions = {}
+) {
   const {
     revalidateOnFocus = true,
     refreshInterval = 0, // No automatic refresh by default
@@ -97,7 +99,10 @@ export function useGitHubRepositories(
  * Combined hook for fetching user and repositories together
  * Useful for pages that need both datasets
  */
-export function useGitHubProfile(username: string, repositoriesPerPage: number = 6) {
+export function useGitHubProfile(
+  username: string,
+  repositoriesPerPage: number = 6
+) {
   const userQuery = useGitHubUser(username);
   const repositoriesQuery = useGitHubRepositories(username, {
     perPage: repositoriesPerPage,
