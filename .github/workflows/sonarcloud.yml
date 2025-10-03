@@ -11,6 +11,11 @@ on:
       - main
     types: [opened, synchronize, reopened]
 
+# Definir permissões necessárias
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   sonarcloud:
     name: SonarCloud Analysis

@@ -1,0 +1,84 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Permissões necessárias
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  checks: write
+
+jobs:
+  # Job principal de qualidade
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run ESLint
+        run: npm run lint
+
+      - name: 🧪 Run tests with coverage
+        run: npm run test:coverage
+
+      - name: 🏗️ Build project
+        run: npm run build
+
+      - name: 📊 SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
+
+      # Comentário no PR apenas se for pull request
+      - name: PR Status Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const body = `## ✅ Quality Gate Passed!
+            
+            All checks completed successfully:
+            - ✅ ESLint passed
+            - ✅ Tests passed with coverage
+            - ✅ Build successful
+            - 📊 SonarCloud analysis completed
+            
+            🎉 **This PR is ready for review!**
+            
+            📊 [View SonarCloud Report](https://sonarcloud.io/project/overview?id=gabschlemper_my-next-app)
+            
+            ---
+            *Automated quality checks by GitHub Actions*`;
+            
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            } catch (error) {
+              console.log('Could not comment on PR:', error.message);
+            }
