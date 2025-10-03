@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { SWRConfig } from 'swr';
 import { useGitHubRepositories, useGitHubUser } from '@/hooks/useGitHub';
 import { RepositoryList } from '@/components/github/RepositoryCard';
@@ -10,9 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 
 /**
  * Repositories Page - Client-Side Rendering with SWR
- * 
+ *
  * DATA FETCHING STRATEGY: Client-Side with SWR Caching
- * 
+ *
  * TRADE-OFFS:
  * - Pros:
  *   * Fast navigation (cached data)
@@ -21,13 +22,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
  *   * Automatic retry and error recovery
  *   * Reduced server load through caching
  *   * Great user experience with loading states
- * 
+ *
  * - Cons:
  *   * No SEO (content not server-rendered)
  *   * Requires JavaScript to function
  *   * Initial loading state visible to users
  *   * Potential for stale data (mitigated by revalidation)
- * 
+ *
  * BEST FOR:
  * - Interactive dashboards
  * - User-specific content
@@ -40,20 +41,20 @@ const REPOSITORIES_PER_PAGE = 12;
 
 function RepositoriesContent() {
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   // SWR hooks for data fetching with automatic caching
-  const { 
-    user, 
-    isLoading: userLoading, 
-    error: userError, 
-    refresh: refreshUser 
+  const {
+    user,
+    isLoading: userLoading,
+    error: userError,
+    refresh: refreshUser,
   } = useGitHubUser(USERNAME);
-  
-  const { 
-    repositories, 
-    isLoading: reposLoading, 
-    error: reposError, 
-    refresh: refreshRepositories 
+
+  const {
+    repositories,
+    isLoading: reposLoading,
+    error: reposError,
+    refresh: refreshRepositories,
   } = useGitHubRepositories(USERNAME, {
     page: currentPage,
     perPage: REPOSITORIES_PER_PAGE,
@@ -78,11 +79,13 @@ function RepositoriesContent() {
               GitHub Repositories
             </h1>
           </div>
-          
+
           <div className="max-w-2xl mx-auto">
-            <ErrorMessage 
+            <ErrorMessage
               message={
-                userError?.message || reposError?.message || 'Failed to load repositories'
+                userError?.message ||
+                reposError?.message ||
+                'Failed to load repositories'
               }
               retry={handleRetry}
             />
@@ -108,10 +111,11 @@ function RepositoriesContent() {
               💡 Technical Implementation Note
             </h2>
             <p className="text-sm text-green-800 dark:text-green-200">
-              This page uses <strong>SWR (Stale-While-Revalidate)</strong> for data fetching. 
-              Data is cached locally and automatically revalidated in the background, providing 
-              fast navigation while keeping content fresh. Try navigating away and back to see 
-              the instant load from cache!
+              This page uses <strong>SWR (Stale-While-Revalidate)</strong> for
+              data fetching. Data is cached locally and automatically
+              revalidated in the background, providing fast navigation while
+              keeping content fresh. Try navigating away and back to see the
+              instant load from cache!
             </p>
           </div>
         </div>
@@ -124,9 +128,11 @@ function RepositoriesContent() {
         ) : user ? (
           <div className="mb-8 text-center">
             <div className="inline-flex items-center space-x-4 bg-white dark:bg-gray-800 rounded-lg px-6 py-4 shadow-sm border border-gray-200 dark:border-gray-700">
-              <img
+              <Image
                 src={user.avatar_url}
                 alt={`${user.name || user.login}'s avatar`}
+                width={48}
+                height={48}
                 className="h-12 w-12 rounded-full"
               />
               <div className="text-left">
@@ -149,7 +155,7 @@ function RepositoriesContent() {
         ) : (
           <>
             <RepositoryList repositories={repositories} />
-            
+
             {/* Pagination Controls */}
             <div className="mt-12 flex justify-center space-x-4">
               <Button
@@ -165,7 +171,9 @@ function RepositoriesContent() {
               <Button
                 variant="secondary"
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={repositories.length < REPOSITORIES_PER_PAGE || reposLoading}
+                disabled={
+                  repositories.length < REPOSITORIES_PER_PAGE || reposLoading
+                }
                 isLoading={reposLoading && repositories.length > 0}
               >
                 Next Page
@@ -191,33 +199,44 @@ function RepositoriesContent() {
                   </h3>
                   <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                     <li>
-                      <strong>Automatic Caching:</strong> Data is cached in memory and persists across page navigations
+                      <strong>Automatic Caching:</strong> Data is cached in
+                      memory and persists across page navigations
                     </li>
                     <li>
-                      <strong>Background Revalidation:</strong> Fresh data is fetched in the background while showing cached content
+                      <strong>Background Revalidation:</strong> Fresh data is
+                      fetched in the background while showing cached content
                     </li>
                     <li>
-                      <strong>Error Recovery:</strong> Automatic retry with exponential backoff on network failures
+                      <strong>Error Recovery:</strong> Automatic retry with
+                      exponential backoff on network failures
                     </li>
                     <li>
-                      <strong>Loading States:</strong> Proper loading indicators for better user experience
+                      <strong>Loading States:</strong> Proper loading indicators
+                      for better user experience
                     </li>
                     <li>
-                      <strong>Pagination:</strong> Client-side pagination with cached pages for fast navigation
+                      <strong>Pagination:</strong> Client-side pagination with
+                      cached pages for fast navigation
                     </li>
                     <li>
-                      <strong>Focus Revalidation:</strong> Data refreshes when you return to the browser tab
+                      <strong>Focus Revalidation:</strong> Data refreshes when
+                      you return to the browser tab
                     </li>
                   </ul>
                 </div>
-                
+
                 <div className="border-t pt-4">
                   <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
                     Try these interactions:
                   </h3>
                   <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                    <li>• Navigate to another page and come back (instant load from cache)</li>
-                    <li>• Switch browser tabs and return (background revalidation)</li>
+                    <li>
+                      • Navigate to another page and come back (instant load
+                      from cache)
+                    </li>
+                    <li>
+                      • Switch browser tabs and return (background revalidation)
+                    </li>
                     <li>• Use pagination (see cached vs loading states)</li>
                     <li>• Disconnect internet and retry (error handling)</li>
                   </ul>
@@ -233,7 +252,7 @@ function RepositoriesContent() {
 
 export default function RepositoriesPage() {
   return (
-    <SWRConfig 
+    <SWRConfig
       value={{
         errorRetryCount: 3,
         errorRetryInterval: 1000,

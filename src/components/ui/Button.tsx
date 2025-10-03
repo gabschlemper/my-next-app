@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * Button Component - Part of Design System
- * 
+ *
  * ACCESSIBILITY FEATURES:
  * - Semantic button element
  * - Focus management with visible focus ring
@@ -13,16 +13,27 @@ import { cn } from '@/lib/utils';
  * - Loading state with aria-disabled
  */
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
-  asChild?: boolean;
   children: React.ReactNode;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', isLoading = false, disabled, asChild = false, children, ...props }, ref) => {
+  (
+    {
+      className,
+      variant = 'primary',
+      size = 'md',
+      isLoading = false,
+      disabled,
+      children,
+      ...props
+    },
+    ref
+  ) => {
     const baseStyles = [
       // Base styles
       'inline-flex items-center justify-center rounded-md font-medium transition-colors',
@@ -68,26 +79,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: 'h-12 px-8 text-lg',
     };
 
-    const buttonClasses = cn(
-      baseStyles,
-      variants[variant],
-      sizes[size],
-      className
-    );
-
-    // If asChild is true, clone the first child and apply button styles
-    if (asChild && React.isValidElement(children)) {
-      return React.cloneElement(children as React.ReactElement<any>, {
-        className: cn(buttonClasses, (children as React.ReactElement<any>).props.className),
-        ref,
-        'aria-disabled': disabled || isLoading,
-        ...props,
-      });
-    }
-
     return (
       <button
-        className={buttonClasses}
+        className={cn(baseStyles, variants[variant], sizes[size], className)}
         ref={ref}
         disabled={disabled || isLoading}
         aria-disabled={disabled || isLoading}
