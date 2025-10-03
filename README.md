@@ -4,7 +4,7 @@ A comprehensive portfolio-style application demonstrating modern Next.js develop
 
 ## 🚀 Live Demo
 
-Visit the application: **[Your deployed URL here]**
+Visit the application: **https://my-next-app-orpin-two.vercel.app/profile**
 
 Sample GitHub user profile used: [@gabschlemper](https://github.com/gabschlemper)
 
